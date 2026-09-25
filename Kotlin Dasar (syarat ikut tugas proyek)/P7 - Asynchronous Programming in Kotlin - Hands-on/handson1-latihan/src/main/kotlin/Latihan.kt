@@ -12,8 +12,10 @@ import kotlinx.coroutines.*
 
 suspend fun checkOrderStatus(orderId: String): String {
     // TODO 1: Simulasikan network delay 2000ms dengan delay()
+    delay(2000)
+
     // TODO 2: Kembalikan String "Order $orderId: SHIPPED"
-    TODO("Lengkapi checkOrderStatus")
+    return "Order $orderId: SHIPPED"
 }
 
 fun main() = runBlocking {
@@ -25,5 +27,6 @@ fun main() = runBlocking {
 
     println("Menunggu status pesanan...")
 
-    // Kode kamu di sini...
+    val status = checkOrderStatus("A100")
+    println(status)
 }

@@ -9,11 +9,9 @@ import kotlin.reflect.full.findAnnotation
 // CATATAN: File ini SENGAJA belum bisa di-compile sampai kamu melengkapi
 // semua TODO di bawah — itu normal untuk latihan ini!
 
-// TODO 1: Buat annotation class bernama Required.
-//         Jangan lupa @Target(AnnotationTarget.FIELD) dan
-//         @Retention(AnnotationRetention.RUNTIME) — tanpa RUNTIME,
-//         annotation tidak akan terbaca saat reflection!
-// annotation class Required
+@Target(AnnotationTarget.PROPERTY)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Required
 
 data class RegistrasiForm(
     @Required val nama: String,
@@ -25,13 +23,22 @@ fun validate(obj: Any): List<String> {
     val gagal = mutableListOf<String>()
 
     // TODO 2: Iterasi memberProperties dari obj::class
-    // TODO 3: Untuk tiap property, cek apakah punya annotation @Required
-    //         dengan property.javaField?.getAnnotation(Required::class.java) != null
-    //         (atau bila menganotasi property Kotlin: findAnnotation<Required>())
-    // TODO 4: Jika beranotasi @Required, ambil nilainya dengan property.getter.call(obj)
-    // TODO 5: Jika nilai null ATAU (String dan blank), tambahkan property.name ke `gagal`
+    obj::class.memberProperties.forEach { property ->
 
-    // Kode kamu di sini...
+        // TODO 3: Cek apakah property memiliki annotation @Required
+        val required = property.findAnnotation<Required>()
+
+        if (required != null) {
+
+            // TODO 4: Ambil nilai property
+            val value = property.getter.call(obj)
+
+            // TODO 5: Cek null atau String kosong/blank
+            if (value == null || (value is String && value.isBlank())) {
+                gagal.add(property.name)
+            }
+        }
+    }
 
     return gagal
 }

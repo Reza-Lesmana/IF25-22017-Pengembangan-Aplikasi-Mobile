@@ -16,23 +16,34 @@ fun main() {
 
     server.createContext("/echo") { exchange ->
         if (exchange.requestMethod != "POST") {
-            // TODO 1: Kirim status 405 Method Not Allowed (body kosong,
-            // pakai sendResponseHeaders(405, -1) lalu return)
+            // TODO 1: Status 405 Method Not Allowed
+            exchange.sendResponseHeaders(405, -1)
+            exchange.close()
+            return@createContext
         }
 
-        // TODO 2: Ganti baris di bawah ini dengan kode yang membaca seluruh isi
-        // exchange.requestBody menjadi ByteArray (gunakan exchange.requestBody.readBytes())
-        val requestBytes: ByteArray = belumDiimplementasikan
+        // TODO 2: Baca seluruh request body menjadi ByteArray
+        val requestBytes: ByteArray = exchange.requestBody.readBytes()
+        exchange.requestBody.close()
 
-        // TODO 3: Kirim balik requestBytes sebagai response body,
-        // dengan status 200
+        // TODO 3: Kirim balik requestBytes sebagai response body
+        exchange.sendResponseHeaders(200, requestBytes.size.toLong())
+
+        exchange.responseBody.use { outputStream ->
+            outputStream.write(requestBytes)
+        }
     }
 
     server.createContext("/") { exchange ->
-        // TODO 4: Ini handler default untuk semua path yang tidak match
-        // context lain (mis. "/foo", "/bar"). Kirim status 404 Not Found
-        // dengan body teks "Not Found: <path>" (ambil path dari
-        // exchange.requestURI.path)
+        // TODO 4: Handler default untuk path yang tidak dikenal
+        val path = exchange.requestURI.path
+        val body = "Not Found: $path".toByteArray()
+
+        exchange.sendResponseHeaders(404, body.size.toLong())
+
+        exchange.responseBody.use { outputStream ->
+            outputStream.write(body)
+        }
     }
 
     server.start()

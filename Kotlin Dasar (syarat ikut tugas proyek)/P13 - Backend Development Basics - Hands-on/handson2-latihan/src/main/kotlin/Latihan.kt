@@ -18,7 +18,12 @@ val users = listOf(
 // string JSON array, contoh:
 // [{"id":1,"name":"Andi"},{"id":2,"name":"Budi"},{"id":3,"name":"Citra"}]
 fun usersToJson(users: List<User>): String {
-    TODO("Ubah list User menjadi JSON array string")
+    return users.joinToString(
+        prefix = "[",
+        postfix = "]"
+    ) { user ->
+        """{"id":${user.id},"name":"${user.name}"}"""
+    }
 }
 
 fun main() {
@@ -26,9 +31,18 @@ fun main() {
 
     server.createContext("/users") { exchange ->
         // TODO 2: Panggil usersToJson(users), kirim sebagai response body
-        // TODO 3: Set header "Content-Type" ke "application/json" SEBELUM
-        // memanggil sendResponseHeaders — pakai exchange.responseHeaders.set(...)
-        // TODO 4: sendResponseHeaders(200, ...) lalu tulis body & tutup stream
+        val json = usersToJson(users)
+        val body = json.toByteArray()
+
+        // TODO 3: Set header "Content-Type" sebelum sendResponseHeaders
+        exchange.responseHeaders.set("Content-Type", "application/json")
+
+        // TODO 4: Kirim response dan tulis body
+        exchange.sendResponseHeaders(200, body.size.toLong())
+
+        exchange.responseBody.use { outputStream ->
+            outputStream.write(body)
+        }
     }
 
     server.start()
