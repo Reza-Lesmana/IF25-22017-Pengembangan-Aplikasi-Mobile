@@ -4,10 +4,10 @@
 
 // TODO 1: Jadikan class ini "open" agar bisa diturunkan (inherited).
 // Primary constructor sudah punya property name (val) dan maxSpeed (val, dalam km/h).
-class Vehicle(val name: String, val maxSpeed: Int) {
+open class Vehicle(val name: String, val maxSpeed: Int) {
 
     // TODO 2: Jadikan fungsi ini "open" agar bisa di-override oleh subclass.
-    fun describe(): String {
+    open fun describe(): String {
         return "$name dapat melaju hingga $maxSpeed km/h"
     }
 }
@@ -15,31 +15,37 @@ class Vehicle(val name: String, val maxSpeed: Int) {
 // TODO 3: Buat class Car sebagai turunan dari Vehicle.
 // Constructor Car menerima name dan jumlah pintu (numberOfDoors: Int),
 // lalu meneruskan (name, maxSpeed = 180) ke constructor Vehicle.
-// Override describe() untuk menambahkan info jumlah pintu, contoh:
-// "Toyota dapat melaju hingga 180 km/h dan punya 4 pintu"
+// Override describe() untuk menambahkan info jumlah pintu.
 
-// class Car(name: String, val numberOfDoors: Int) : Vehicle(...) {
-//     override fun describe(): String { ... }
-// }
+class Car(name: String, val numberOfDoors: Int) : Vehicle(name, maxSpeed = 180) {
+    override fun describe(): String {
+        return "$name dapat melaju hingga $maxSpeed km/h dan punya $numberOfDoors pintu"
+    }
+}
 
 // TODO 4: Buat class Motorcycle sebagai turunan dari Vehicle.
 // Constructor Motorcycle menerima name dan hasSidecar: Boolean,
 // lalu meneruskan (name, maxSpeed = 220) ke constructor Vehicle.
-// Override describe() untuk menambahkan info sidecar, contoh:
-// "Ninja dapat melaju hingga 220 km/h (dengan sidecar)"
-// atau "Ninja dapat melaju hingga 220 km/h (tanpa sidecar)"
+// Override describe() untuk menambahkan info sidecar.
 
-// class Motorcycle(name: String, val hasSidecar: Boolean) : Vehicle(...) {
-//     override fun describe(): String { ... }
-// }
+class Motorcycle(name: String, val hasSidecar: Boolean) : Vehicle(name, maxSpeed = 220) {
+    override fun describe(): String {
+        val sidecarText = if (hasSidecar) "dengan sidecar" else "tanpa sidecar"
+        return "$name dapat melaju hingga $maxSpeed km/h ($sidecarText)"
+    }
+}
 
 fun main() {
     val vehicles = listOf<Vehicle>(
-        // TODO 5: Buat 1 instance Car dan 1 instance Motorcycle, masukkan ke list ini.
-        // Contoh: Car("Toyota", numberOfDoors = 4), Motorcycle("Ninja", hasSidecar = false)
+        // TODO 5: Buat 1 instance Car dan 1 instance Motorcycle.
+        Car("Toyota", numberOfDoors = 4),
+        Motorcycle("Ninja", hasSidecar = false)
     )
 
-    // Polymorphism: setiap elemen dipanggil lewat interface Vehicle,
-    // tapi describe() yang jalan adalah versi milik subclass masing-masing.
+    // Polymorphism
     vehicles.forEach { println(it.describe()) }
 }
+
+// Output:
+// Toyota dapat melaju hingga 180 km/h dan punya 4 pintu
+// Ninja dapat melaju hingga 220 km/h (tanpa sidecar)
